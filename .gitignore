@@ -7,7 +7,6 @@
 *.so
 
 data/
-notebooks/
 saved/
 
 # Distribution / packaging
