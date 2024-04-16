@@ -1,0 +1,11 @@
+torchvision
+numpy
+tqdm
+matplotlib
+pandas
+gdown
+wandb
+addict
+ftfy
+regex
+dlib
