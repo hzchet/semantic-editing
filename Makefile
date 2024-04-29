@@ -1,5 +1,5 @@
 NAME?=semantic-editing
-GPUS?=1
+GPUS?=0
 DATA_ROOT?=/s3/aidar/semantic-editing
 NOTEBOOKS?=/s3/aidar/notebooks/semantic-editing
 CHECKPOINTS?=/s3/aidar/checkpoints/semantic-editing
