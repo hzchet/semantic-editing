@@ -4,7 +4,6 @@ DATA_ROOT?=/s3/aidar/semantic-editing
 NOTEBOOKS?=/s3/aidar/notebooks/semantic-editing
 CHECKPOINTS?=/s3/aidar/checkpoints/semantic-editing
 
-
 .PHONY: build run stop
 
 build:
