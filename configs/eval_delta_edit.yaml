@@ -1,0 +1,73 @@
+seed: 42
+device: cuda:1
+
+data:
+  module: src.datasets
+  type: EvalFFHQ
+  params:
+    path_to_w_latents: "/workspace/data/wspace_ffhq_feat.npy"
+    path_to_s_latents: "/workspace/data/sspace_ffhq_feat.npy"
+    path_to_c_latents: "/workspace/data/cspace_ffhq_feat.npy"
+
+  batch_size: 28
+  num_workers: 3
+
+inferencer:
+  module: src.models.delta_edit.inferencer
+  type: DeltaEditInferencer
+  params:
+    stylegan2_ckpt: '/workspace/saved/stylegan2/stylegan2-ffhq-config-f.pt'
+    relevance_matrix_path: '/workspace/saved/stylegan2/fs3.npy'
+    clip_ckpt: 'ViT-B/32'
+    delta_mapper_ckpt: '/workspace/saved/models/net_face.pth'
+
+evaluator:
+  params:
+    neutral_prompts:
+      - 'face with a chin'
+      - 'face with eyes'
+      - 'person in clothes'
+      - 'person'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face with mouth'
+      - 'face with'
+      - 'face with eyes'
+      - 'face with skin'
+      - 'face with skin'
+      - 'face with'
+      - 'face with hair'
+      - 'face with hair'
+      - 'face with hair'
+      - 'face with hair'
+      - 'face with hairline'
+      - 'face with hairstyle'
+    prompts:
+      - 'face with a double chin'
+      - 'face with big eyes'
+      - 'person in black clothes'
+      - 'person in a blue suit'
+      - 'happy face'
+      - 'surprised face'
+      - 'male face'
+      - 'chubby face'
+      - 'face with eyeglasses'
+      - 'face with mouth slightly open'
+      - 'face with a smile'
+      - 'face with blue eyes'
+      - 'face with pale skin'
+      - 'face with tanned skin'
+      - 'face with bangs'
+      - 'face with red hair'
+      - 'face with black hair'
+      - 'face with blond hair'
+      - 'face with curly hair'
+      - 'face with receeding hairline'
+      - 'face with blowcut hairstyle'
+    arcface_ckpt: '/workspace/saved/models/model_ir_se50.pth'
+    wandb_project: 'semantic-editing'
+    wandb_run_name: 'DeltaEdit'
+    wandb_dir: '/workspace/saved/wandb/'

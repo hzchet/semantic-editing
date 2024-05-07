@@ -1,0 +1,50 @@
+seed: 42
+device: cuda:0
+
+data:
+  module: src.datasets
+  type: EvalFFHQ
+  params:
+    path_to_w_latents: "/workspace/data/wspace_ffhq_feat.npy"
+
+
+  batch_size: 16
+  num_workers: 3
+
+inferencer:
+  module: src.models.ffclip.inferencer
+  type: FFCLIPInferencer
+  params:
+    stylegan2_ckpt: '/workspace/saved/stylegan2/stylegan2-ffhq-config-f.pt'
+    clip_ckpt: 'ViT-B/32'
+    ffclip_ckpt: '/workspace/saved/models/ffclip.ckpt'
+
+
+evaluator:
+  params:
+    prompts:
+      - 'face with a double chin'
+      - 'face with big eyes'
+      - 'person in black clothes'
+      - 'person in a blue suit'
+      - 'happy face'
+      - 'surprised face'
+      - 'male face'
+      - 'chubby face'
+      - 'face with eyeglasses'
+      - 'face with mouth slightly open'
+      - 'face with a smile'
+      - 'face with blue eyes'
+      - 'face with pale skin'
+      - 'face with tanned skin'
+      - 'face with bangs'
+      - 'face with red hair'
+      - 'face with black hair'
+      - 'face with blond hair'
+      - 'face with curly hair'
+      - 'face with receeding hairline'
+      - 'face with blowcut hairstyle'
+    arcface_ckpt: '/workspace/saved/models/model_ir_se50.pth'
+    wandb_project: 'semantic-editing'
+    wandb_run_name: 'FFCLIP'
+    wandb_dir: '/workspace/saved/wandb/'
