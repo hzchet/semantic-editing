@@ -9,3 +9,5 @@ addict
 ftfy
 regex
 dlib
+torcheval
+black
