@@ -1,7 +1,6 @@
 NAME?=semantic-editing
 GPUS?=all
 DATA_ROOT?=/s3/aidar/semantic-editing
-NOTEBOOKS?=/s3/aidar/notebooks/semantic-editing
 CHECKPOINTS?=/s3/aidar/checkpoints/semantic-editing
 
 .PHONY: build run stop
@@ -16,7 +15,6 @@ run:
 	--net=host \
 	-v $(PWD):/workspace \
 	-v $(DATA_ROOT):/workspace/data \
-	-v $(NOTEBOOKS):/workspace/notebooks \
 	-v $(CHECKPOINTS):/workspace/saved \
 	--name=$(NAME) \
 	$(NAME) \
