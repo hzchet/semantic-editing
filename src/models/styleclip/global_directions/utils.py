@@ -138,14 +138,15 @@ def zeroshot_classifier(classnames, templates, model):
     return zeroshot_weights
 
 
-def GetDt(classnames, model):
+def GetDt(classnames, model, normalize=True):
     text_features = zeroshot_classifier(classnames, imagenet_templates, model).t()
 
     dt = text_features[0] - text_features[1]
     dt = dt.cpu().numpy()
-
-    print(np.linalg.norm(dt))
-    dt = dt / np.linalg.norm(dt)
+    
+    if normalize:
+    # print(np.linalg.norm(dt))
+        dt = dt / np.linalg.norm(dt)
     return dt
 
 
@@ -161,7 +162,7 @@ def GetBoundary(fs3, dt, M, threshold):
     ds_imp /= tmp
 
     boundary_tmp2 = SplitS(ds_imp, M, if_std=True)
-    print("num of channels being manipulated:", num_c)
+    # print("num of channels being manipulated:", num_c)
     return boundary_tmp2, num_c
 
 

@@ -27,25 +27,34 @@ class StyleCLIPInferencer(BaseInferencer):
 
         self.manipulator.G = self.manipulator.LoadModel(stylegan2_path, device)
         self.manipulator.SetGParameters()
-        num_img = 100_000
+        num_img = 100
         self.manipulator.GenerateS(num_img=num_img)
         self.manipulator.GetCodeMS()
         np.set_printoptions(suppress=True)
 
         self.fs3 = np.load(relevance_matrix_path)
 
-    def __call__(self, w_latents, text_prompt: str, neutral_text: str = 'face'):
-        self.manipulator.num_images = w_latents.shape[0]
-
-        s_latents = self.manipulator.G.synthesis.W2S(w_latents)
-        s_latents = self.manipulator.S2List(s_latents)
+    def __call__(
+        self,
+        w_latent,
+        text_prompt: str,
+        neutral_text: str = 'face',
+        *args,
+        **kwargs
+    ):
+        self.manipulator.num_images = w_latent.shape[0]
+        s_latents = self.manipulator.G.synthesis.W2S(w_latent.to(self.device))
 
         classnames = [text_prompt, neutral_text]
         dt = GetDt(classnames, self.clip_model)
 
         boundary, _ = GetBoundary(self.fs3, dt, self.manipulator,
                                   threshold=self.beta)
+        
         codes = self.manipulator.MSCode(s_latents, boundary)
         out = self.manipulator.GenerateImg(codes)
 
-        return out.squeeze(1)
+        return out, self.to_image(s_latents)
+
+    def to_image(self, s_latent, *args, **kwargs):
+        return self.manipulator.GenerateImg(s_latent)

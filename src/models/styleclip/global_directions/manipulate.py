@@ -1,4 +1,5 @@
 import copy
+from copy import deepcopy
 
 import numpy as np
 import torch
@@ -124,48 +125,17 @@ class Manipulator:
 
         self.dlatents = S2List(encoded_styles)
 
-    def GenerateImg(self, codes):
-
-        num_images, step = codes[0].shape[:2]
-        out = np.zeros(
-            (num_images, step, self.img_size, self.img_size, 3), dtype="uint8"
-        )
-        for i in range(num_images):
-            for k in range(step):
-
-                tmp_code = []
-                for m in range(len(self.s_names)):
-                    tmp = codes[m][i, k][None, :]
-                    tmp_code.append(tmp)
-
-                encoded_styles = self.SL2D(tmp_code)
-
-                with torch.no_grad():
-                    img = self.G.synthesis(
-                        None, encoded_styles=encoded_styles, noise_mode="const"
-                    )
-                    img = (img + 1) * (255 / 2)
-                    img = (
-                        img.permute(0, 2, 3, 1)
-                        .clamp(0, 255)
-                        .to(torch.uint8)[0]
-                        .cpu()
-                        .numpy()
-                    )
-
-                if img.shape[1] == img.shape[0]:
-                    out[i, k, :, :, :] = img
-                else:
-                    tmp = img.shape[1]
-                    tmp1 = int((img.shape[0] - tmp) / 2)
-                    out[i, k, :, tmp1 : tmp1 + tmp, :] = img
-        return out
+    def GenerateImg(self, s_latents):
+        with torch.no_grad():
+            imgs = self.G.synthesis(
+                None, encoded_styles=s_latents, noise_mode="const"
+            ).detach().cpu()
+            
+        return imgs
 
     def ShowImg(self, num_img=10):
-
         codes = []
         for i in range(len(self.dlatents)):
-            # print(i)
             tmp = self.dlatents[i][:num_img, None, :]
             codes.append(tmp)
         out = self.GenerateImg(codes)
@@ -180,37 +150,14 @@ class Manipulator:
 
         self.mindexs = [0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24]
 
-    def MSCode(self, dlatent_tmp, boundary_tmp):
+    def MSCode(self, s_latents, boundary):
+        manipulated = deepcopy(s_latents)
 
-        step = len(self.alpha)
-        dlatent_tmp1 = [tmp.reshape((self.num_images, -1)) for tmp in dlatent_tmp]
-        dlatent_tmp2 = [
-            np.tile(tmp[:, None], (1, step, 1)) for tmp in dlatent_tmp1
-        ]  # (10, 7, 512)
-
-        l = np.array(self.alpha)
-        l = l.reshape(
-            [step if axis == 1 else 1 for axis in range(dlatent_tmp2[0].ndim)]
-        )
-
-        if type(self.manipulate_layers) == int:
-            tmp = [self.manipulate_layers]
-        elif type(self.manipulate_layers) == list:
-            tmp = self.manipulate_layers
-        elif self.manipulate_layers is None:
-            tmp = np.arange(len(boundary_tmp))
-        else:
-            raise ValueError("manipulate_layers is wrong")
-
-        for i in tmp:
-            dlatent_tmp2[i] += l * boundary_tmp[i]
-
-        codes = []
-        for i in range(len(dlatent_tmp2)):
-            tmp = list(dlatent_tmp[i].shape)
-            tmp.insert(1, step)
-            codes.append(dlatent_tmp2[i].reshape(tmp))
-        return codes
+        for i in range(len(self.s_names)):
+            key = self.s_names[i]
+            manipulated[key] += self.alpha[0] * torch.from_numpy(boundary[i]).to(manipulated[key])
+        
+        return manipulated
 
     def EditOne(self, bname, dlatent_tmp=None):
         if dlatent_tmp == None:
@@ -314,27 +261,3 @@ class Manipulator:
         self.code_mean = m
         self.code_std = std
         # return m,std
-
-
-if __name__ == "__main__":
-    network_pkl = "/cs/labs/danix/wuzongze/Gan_Manipulation/stylegan2/model/stylegan2-ffhq-config-f.pkl"
-    device = torch.device("cuda")
-    M = Manipulator()
-    M.device = device
-    G = M.LoadModel(network_pkl, device)
-    M.G = G
-    M.SetGParameters()
-    num_img = 100_000
-    M.GenerateS(num_img=num_img)
-    M.GetCodeMS()
-    np.set_printoptions(suppress=True)
-
-    M.alpha = [24, 16, 8, 0, -8, -16, -24]
-    M.step = len(M.alpha)
-    M.img_index = 0
-    M.num_images = 10
-    lindex, bname = 6, 501
-    #    M.
-    M.manipulate_layers = [lindex]
-    codes, out = M.EditOneC(bname)  # dlatent_tmp
-    tmp = str(M.manipulate_layers) + "_" + str(bname)
