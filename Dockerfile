@@ -7,4 +7,3 @@ RUN apt-get install -y wget
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 RUN pip install git+https://github.com/openai/CLIP.git
-RUN pip install black
