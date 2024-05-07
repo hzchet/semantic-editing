@@ -1,7 +1,7 @@
 import importlib
 
 
-def build_object(type, params, imported_module):
+def build_object(type, imported_module):
     """
     Function to build pythonic object from strings
     :param type: string of what particular object should be taken
@@ -10,10 +10,7 @@ def build_object(type, params, imported_module):
     :return: Pythonic object imported and built with params
     """
     module = importlib.import_module(imported_module)
-    if params:
-        return getattr(module, type)(**params)
-    else:
-        return getattr(module, type)()
+    return getattr(module, type)
 
 
 def build_loaded_object(type, params, imported_module, path):
