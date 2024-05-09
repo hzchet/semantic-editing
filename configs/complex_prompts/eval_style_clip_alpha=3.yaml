@@ -1,0 +1,50 @@
+seed: 42
+device: cuda:0
+
+data:
+  module: src.datasets
+  type: EvalFFHQ
+  params:
+    path_to_w_latents: "/workspace/data/wspace_ffhq_feat.npy"
+
+  batch_size: 28
+  num_workers: 3
+
+inferencer:
+  module: src.models.styleclip.global_directions.inferencer
+  type: StyleCLIPInferencer
+  params:
+    stylegan2_path: '/workspace/saved/stylegan2/ffhq.pkl'
+    relevance_matrix_path: '/workspace/saved/stylegan2/fs3.npy'
+    clip_ckpt: 'ViT-B/32'
+    alpha: 3
+    beta: 0.1
+
+evaluator:
+  params:
+    neutral_prompts:
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+    prompts:
+      - 'face with straight long hair'
+      - 'face with curly hair, smile, eyeglasses'
+      - 'face with bangs, double chin'
+      - 'face with smile, wearing earings'
+      - 'face with smile, straight short hair, eyeglasses'
+      - 'bald face with makeup'
+      - 'face with beard, blond mohawk hair'
+      - 'zlatan ibrahimovich face'
+      - 'taylor swift face'
+      - 'beyonce face'
+    arcface_ckpt: '/workspace/saved/models/model_ir_se50.pth'
+    wandb_project: 'semantic-editing'
+    wandb_run_name: 'StyleCLIP GD alpha=3, beta=0.1_complex_test'
+    wandb_dir: '/workspace/saved/wandb/'

@@ -23,14 +23,19 @@ class FFCLIPInferencer(BaseInferencer):
         self.generator = Generator(
             size=stylegan_size,
             style_dim=style_dim,
-            n_mlp=8
+            n_mlp=8,
+            channel_multiplier=2,
+            blur_kernel=[1, 3, 3, 1],
+            lr_mlp=0.01
         )
         ckpt = torch.load(stylegan2_ckpt)
         self.generator.load_state_dict(ckpt['g_ema'], strict=True)
+        self.generator.latent_avg = ckpt['latent_avg']
         self.generator.eval()
         self.generator = self.generator.to(device)
         
         self.clip_model, _ = clip.load(clip_ckpt, device=device)
+        self.clip_model = self.clip_model.eval().float()
         
         self.ffclip = DynamicMapper()
         self.ffclip.load_state_dict(torch.load(ffclip_ckpt))

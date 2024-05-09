@@ -8,7 +8,7 @@ data:
     path_to_w_latents: "/workspace/data/wspace_ffhq_feat.npy"
 
 
-  batch_size: 16
+  batch_size: 28
   num_workers: 3
 
 inferencer:

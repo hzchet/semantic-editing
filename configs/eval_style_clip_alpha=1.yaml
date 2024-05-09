@@ -1,0 +1,72 @@
+seed: 42
+device: cuda:0
+
+data:
+  module: src.datasets
+  type: EvalFFHQ
+  params:
+    path_to_w_latents: "/workspace/data/wspace_ffhq_feat.npy"
+
+  batch_size: 28
+  num_workers: 3
+
+inferencer:
+  module: src.models.styleclip.global_directions.inferencer
+  type: StyleCLIPInferencer
+  params:
+    stylegan2_path: '/workspace/saved/stylegan2/ffhq.pkl'
+    relevance_matrix_path: '/workspace/saved/stylegan2/fs3.npy'
+    clip_ckpt: 'ViT-B/32'
+    alpha: 1
+    beta: 0.1
+
+evaluator:
+  params:
+    neutral_prompts:
+      - 'face with a chin'
+      - 'face with eyes'
+      - 'person in clothes'
+      - 'person'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face with mouth'
+      - 'face with'
+      - 'face with eyes'
+      - 'face with skin'
+      - 'face with skin'
+      - 'face with'
+      - 'face with hair'
+      - 'face with hair'
+      - 'face with hair'
+      - 'face with hair'
+      - 'face with hairline'
+      - 'face with hairstyle'
+    prompts:
+      - 'face with a double chin'
+      - 'face with big eyes'
+      - 'person in black clothes'
+      - 'person in a blue suit'
+      - 'happy face'
+      - 'surprised face'
+      - 'male face'
+      - 'chubby face'
+      - 'face with eyeglasses'
+      - 'face with mouth slightly open'
+      - 'face with a smile'
+      - 'face with blue eyes'
+      - 'face with pale skin'
+      - 'face with tanned skin'
+      - 'face with bangs'
+      - 'face with red hair'
+      - 'face with black hair'
+      - 'face with blond hair'
+      - 'face with curly hair'
+      - 'face with receeding hairline'
+      - 'face with blowcut hairstyle'
+    arcface_ckpt: '/workspace/saved/models/model_ir_se50.pth'
+    wandb_project: 'semantic-editing'
+    wandb_run_name: 'StyleCLIP GD alpha=1, beta=0.1'
+    wandb_dir: '/workspace/saved/wandb/'
