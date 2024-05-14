@@ -21,7 +21,8 @@ class DeltaEditInferencer(BaseInferencer):
         device: torch.device,
         stylegan_size: int = 1024,
         style_dim: int = 512,
-        threshold: float = 0.03
+        threshold: float = 0.03,
+        from_locally_trained: bool = False
     ):
         super().__init__()
         self.generator = Generator(
@@ -41,6 +42,8 @@ class DeltaEditInferencer(BaseInferencer):
         
         self.delta_mapper = DeltaMapper()
         ckpt = torch.load(delta_mapper_ckpt)
+        if from_locally_trained:
+            ckpt = ckpt['state_dict']
         self.delta_mapper.load_state_dict(ckpt)
         self.delta_mapper = self.delta_mapper.to(device)
         

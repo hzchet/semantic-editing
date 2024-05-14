@@ -23,7 +23,6 @@ class Mapper(Module):
 
 
 class DeltaMapper(Module):
-
     def __init__(self):
         super().__init__()
 
@@ -43,7 +42,6 @@ class DeltaMapper(Module):
         self.fm_fine   = Mapper(2464*2, 2464, norm=False)
         
     def forward(self, sspace_feat, clip_feat):
-
         s_coarse = sspace_feat[:, :3*512].view(-1,3,512)
         s_medium = sspace_feat[:, 3*512:7*512].view(-1,4,512)
         s_fine   = sspace_feat[:, 7*512:] #channels:2464
@@ -51,7 +49,7 @@ class DeltaMapper(Module):
         s_coarse = self.sm_coarse(s_coarse)
         s_medium = self.sm_medium(s_medium)
         s_fine   = self.sm_fine(s_fine)
-
+        
         c_coarse = self.cm_coarse(clip_feat)
         c_medium = self.cm_medium(clip_feat)
         c_fine   = self.cm_fine(clip_feat)
@@ -69,4 +67,5 @@ class DeltaMapper(Module):
         x_fine   = self.fm_fine(x_fine)
 
         out = torch.cat([x_coarse, x_medium, x_fine], dim=1)
+        
         return out
