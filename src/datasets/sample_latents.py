@@ -3,6 +3,7 @@ import os
 import torch
 import numpy as np
 import clip
+from tqdm import trange
 
 from src.models.stylegan2.model import Generator
 from src.utils import seed_everything
@@ -19,21 +20,21 @@ def generate_codes(
     truncation=1
 ):
     model, preprocess = clip.load("ViT-B/32", device=device)
-    avg_pool = torch.nn.AvgPool2d(kernel_size=1024 // 32)
-    upsample = torch.nn.Upsample(scale_factor=7)
+    avg_pool = torch.nn.AvgPool2d(kernel_size=1024 // 32).to(device)
+    upsample = torch.nn.Upsample(scale_factor=7).to(device)
 
     ind = 0
-    with torch.no_grad():
+    with torch.inference_mode():
         generator.eval()
 
         # Generate image by sampling input noises
         w_latents_list = []
         s_latents_list = []
         c_latents_list = []
-        for start in range(0, samples, batch_size):
+        for start in trange(0, samples, batch_size, desc='sampling latents'):
             end = min(start + batch_size, samples)
             batch_sz = end - start
-            print(f'current_num:{start}')
+            # print(f'current_num:{start}')
             sample_z = torch.randn(batch_sz, 512, device=device)
 
             sample, w_latents = generator([sample_z], truncation=truncation, truncation_latent=mean_latent,return_latents=True)
@@ -49,9 +50,9 @@ def generate_codes(
             img_gen_for_clip = avg_pool(img_gen_for_clip)
             c_latents = model.encode_image(img_gen_for_clip)
 
-            w_latents_list.append(w_latents)
-            s_latents_list.append(s_latents)
-            c_latents_list.append(c_latents)
+            w_latents_list.append(w_latents.detach().cpu())
+            s_latents_list.append(s_latents.detach().cpu())
+            c_latents_list.append(c_latents.detach().cpu())
         w_all_latents = torch.cat(w_latents_list, dim=0)
         s_all_latents = torch.cat(s_latents_list, dim=0)
         c_all_latents = torch.cat(c_latents_list, dim=0)

@@ -1,6 +1,7 @@
-from .ffhq_dataset import EvalFFHQ
+from .ffhq_dataset import EvalFFHQ, TrainDeltaFFHQ
 
 
 __all__ = [
-    'EvalFFHQ'
+    'EvalFFHQ',
+    'TrainDeltaFFHQ'
 ]
