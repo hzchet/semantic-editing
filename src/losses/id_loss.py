@@ -5,7 +5,7 @@ from src.models.facial_recognition import Backbone
 
 
 class IDLoss(nn.Module):
-    def __init__(self, ir_se50_weights: str):
+    def __init__(self, device, ir_se50_weights: str = '/workspace/saved/models/model_ir_se50.pth'):
         super(IDLoss, self).__init__()
         print('Loading ResNet ArcFace')
         self.facenet = Backbone(input_size=112, num_layers=50, drop_ratio=0.6, mode='ir_se')
@@ -13,14 +13,16 @@ class IDLoss(nn.Module):
         self.pool = torch.nn.AdaptiveAvgPool2d((256, 256))
         self.face_pool = torch.nn.AdaptiveAvgPool2d((112, 112))
         self.facenet.eval()
-        self.facenet.cuda()
+        self.facenet = self.facenet.to(device)
+
+        self.device = device
         
         self.loss_values = []
         self.batch_sizes = []
 
     def extract_feats(self, x):
         if x.shape[2] != 256:
-            x = self.pool(x.cuda())
+            x = self.pool(x.to(self.device))
         x = x[:, :, 35:223, 32:220]  # Crop interesting region
         x = self.face_pool(x)
         x_feats = self.facenet(x)
