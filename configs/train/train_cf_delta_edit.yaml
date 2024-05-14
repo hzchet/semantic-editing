@@ -1,0 +1,48 @@
+device: 'cuda:1'
+seed: 42
+
+model:
+  type: DeltaMapper
+  module: src.models.delta_edit
+  params: {}
+
+data:
+  type: TrainDeltaFFHQ
+  module: src.datasets
+  params:
+    path_to_w_latents: "/workspace/data/wspace_ffhq_feat.npy"
+    path_to_s_latents: "/workspace/data/sspace_ffhq_feat.npy"
+    path_to_c_latents: "/workspace/data/cspace_ffhq_feat.npy"
+    path_to_noise_w_latents: "/workspace/data/wspace_noise_feat.npy"
+    path_to_noise_s_latents: "/workspace/data/sspace_noise_feat.npy"
+    path_to_noise_c_latents: "/workspace/data/cspace_noise_feat.npy"
+
+  batch_size: 8
+  num_workers: 5
+
+optimizer:
+  type: Adam
+  module: torch.optim
+  params:
+    lr: 0.5
+
+trainer:
+  type: CFDeltaEditTrainer
+  module: src.trainers
+  params:
+    stylegan2_ckpt: '/workspace/saved/stylegan2/stylegan2-ffhq-config-f.pt'
+    n_epochs: 50
+    len_epoch: 1000
+    l2_lambda: 0.8
+    # cos_lambda: 0.2
+    id_lambda: 0.2
+    nce_lambda: 0.3
+    num_aug: 8
+    log_step: 50
+    src_text: 'face'
+    save_dir: /workspace/saved/training_logs
+    save_every: 5
+    wandb_project: 'semantic-editing'
+    wandb_run_name: 'CFDeltaEdit_idloss'
+
+resume: False

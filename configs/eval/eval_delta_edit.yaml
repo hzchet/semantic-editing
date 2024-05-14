@@ -6,25 +6,29 @@ data:
   type: EvalFFHQ
   params:
     path_to_w_latents: "/workspace/data/wspace_ffhq_feat.npy"
+    path_to_s_latents: "/workspace/data/sspace_ffhq_feat.npy"
+    path_to_c_latents: "/workspace/data/cspace_ffhq_feat.npy"
 
   batch_size: 28
   num_workers: 3
 
 inferencer:
-  module: src.models.styleclip.global_directions.inferencer
-  type: StyleCLIPInferencer
+  module: src.models.delta_edit.inferencer
+  type: DeltaEditInferencer
   params:
-    stylegan2_path: '/workspace/saved/stylegan2/ffhq.pkl'
+    stylegan2_ckpt: '/workspace/saved/stylegan2/stylegan2-ffhq-config-f.pt'
     relevance_matrix_path: '/workspace/saved/stylegan2/fs3.npy'
     clip_ckpt: 'ViT-B/32'
-    alpha: 4
-    beta: 0.1
+    delta_mapper_ckpt: '/workspace/saved/training_logs/DeltaEdit_baseline_training2/epoch_300.ckpt'
+    from_locally_trained: True
 
 evaluator:
   params:
     neutral_prompts:
-      - 'face with a chin'
-      - 'face with eyes'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
       - 'person in clothes'
       - 'person'
       - 'face'
@@ -32,18 +36,16 @@ evaluator:
       - 'face'
       - 'face'
       - 'face'
-      - 'face with mouth'
-      - 'face with'
-      - 'face with eyes'
-      - 'face with skin'
-      - 'face with skin'
-      - 'face with'
-      - 'face with hair'
-      - 'face with hair'
-      - 'face with hair'
-      - 'face with hair'
-      - 'face with hairline'
-      - 'face with hairstyle'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
+      - 'face'
     prompts:
       - 'face with a double chin'
       - 'face with big eyes'
@@ -65,8 +67,8 @@ evaluator:
       - 'face with blond hair'
       - 'face with curly hair'
       - 'face with receeding hairline'
-      - 'face with blowcut hairstyle'
+      - 'face with bowlcut hairstyle'
     arcface_ckpt: '/workspace/saved/models/model_ir_se50.pth'
     wandb_project: 'semantic-editing'
-    wandb_run_name: 'StyleCLIP GD alpha=4, beta=0.1'
+    wandb_run_name: 'DeltaEdit_reimpl'
     wandb_dir: '/workspace/saved/wandb/'

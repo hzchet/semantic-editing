@@ -1,25 +1,24 @@
 seed: 42
-device: cuda:1
+device: cuda:0
 
 data:
   module: src.datasets
   type: EvalFFHQ
   params:
     path_to_w_latents: "/workspace/data/wspace_ffhq_feat.npy"
-    path_to_s_latents: "/workspace/data/sspace_ffhq_feat.npy"
-    path_to_c_latents: "/workspace/data/cspace_ffhq_feat.npy"
 
   batch_size: 28
   num_workers: 3
 
 inferencer:
-  module: src.models.delta_edit.inferencer
-  type: DeltaEditInferencer
+  module: src.models.styleclip.global_directions.inferencer
+  type: StyleCLIPInferencer
   params:
-    stylegan2_ckpt: '/workspace/saved/stylegan2/stylegan2-ffhq-config-f.pt'
+    stylegan2_path: '/workspace/saved/stylegan2/ffhq.pkl'
     relevance_matrix_path: '/workspace/saved/stylegan2/fs3.npy'
     clip_ckpt: 'ViT-B/32'
-    delta_mapper_ckpt: '/workspace/saved/models/net_face.pth'
+    alpha: 4
+    beta: 0.1
 
 evaluator:
   params:
@@ -34,11 +33,11 @@ evaluator:
       - 'face'
       - 'face'
       - 'face with mouth'
-      - 'face with'
+      - 'face'
       - 'face with eyes'
       - 'face with skin'
       - 'face with skin'
-      - 'face with'
+      - 'face'
       - 'face with hair'
       - 'face with hair'
       - 'face with hair'
@@ -66,8 +65,8 @@ evaluator:
       - 'face with blond hair'
       - 'face with curly hair'
       - 'face with receeding hairline'
-      - 'face with blowcut hairstyle'
+      - 'face with bowlcut hairstyle'
     arcface_ckpt: '/workspace/saved/models/model_ir_se50.pth'
     wandb_project: 'semantic-editing'
-    wandb_run_name: 'DeltaEdit'
+    wandb_run_name: 'StyleCLIP GD alpha=4, beta=0.1'
     wandb_dir: '/workspace/saved/wandb/'

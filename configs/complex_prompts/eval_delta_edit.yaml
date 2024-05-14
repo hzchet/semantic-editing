@@ -19,7 +19,8 @@ inferencer:
     stylegan2_ckpt: '/workspace/saved/stylegan2/stylegan2-ffhq-config-f.pt'
     relevance_matrix_path: '/workspace/saved/stylegan2/fs3.npy'
     clip_ckpt: 'ViT-B/32'
-    delta_mapper_ckpt: '/workspace/saved/models/net_face.pth'
+    delta_mapper_ckpt: '/workspace/saved/training_logs/DeltaEdit_baseline_training/epoch_150.ckpt'
+    from_locally_trained: True
 
 evaluator:
   params:
@@ -47,5 +48,5 @@ evaluator:
       - 'beyonce face'
     arcface_ckpt: '/workspace/saved/models/model_ir_se50.pth'
     wandb_project: 'semantic-editing'
-    wandb_run_name: 'DeltaEdit_complex_test'
+    wandb_run_name: 'DeltaEdit_reimpl_complex_test'
     wandb_dir: '/workspace/saved/wandb/'
