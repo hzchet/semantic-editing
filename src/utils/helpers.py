@@ -1,5 +1,6 @@
 from typing import Dict
 import yaml
+from itertools import repeat
 
 import torch
 import numpy as np
@@ -21,3 +22,9 @@ def seed_everything(seed: int):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     np.random.seed(seed)
+
+
+def inf_loop(data_loader):
+    """wrapper function for endless data loader."""
+    for loader in repeat(data_loader):
+        yield from loader
